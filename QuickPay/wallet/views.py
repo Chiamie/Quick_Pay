@@ -4,13 +4,14 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from .models import Wallet
-from .serializer import WalletTransferSerializer, DepositSerializer, FundWalletSerializer
+from .serializer import WalletTransferSerializer, DepositSerializer, FundWalletSerializer, DashboardSerializer
 from wallet.services.intra_transfer import transfer_wallet_to_wallet
 from rest_framework.permissions import IsAuthenticated
 from wallet.services.deposit import deposit
 from notification.services import create_transfer_notification
 from services.transfer_service import create_transfer
 from wallet.services.fund_wallet import initiate_paystack_payment
+from .services.dashboard import get_dashboard_data
 
 
 # Create your views here.
@@ -78,3 +79,10 @@ def fundd_wallet(request):
 
     return Response(payment_response, status = status.HTTP_200_OK)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def dashboard(request):
+    user = request.user
+    dashboard_data = get_dashboard_data(user)
+    serializer = DashboardSerializer(dashboard_data)
+    return Response(serializer.data, status=status.HTTP_200_OK)

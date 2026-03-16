@@ -20,6 +20,14 @@ class Wallet(models.Model):
         ('EUR', 'Euro'),
     )
 
+    WALLET_STATUS=(
+        ('ACTIVE', 'Active'),
+        ('INACTIVE', 'Inactive'),
+        ('SUSPENDED', 'Suspended'),
+        ('CLOSED', 'Closed'),
+        ('FROZEN', 'Frozen'),
+    )
+
     user = models.OneToOneField(user, on_delete=models.PROTECT)
     #with on_delete as PROTECT both the parent class and the child class
     #cannot be deleted.
@@ -33,6 +41,8 @@ class Wallet(models.Model):
     status = models.BooleanField(default=True) #Every wallet is active by default
     created_at = models.DateTimeField(auto_now_add=True) #Stores only at creation
 
+    def __str__(self):
+        return f"{self.wallet_number}"
 
 #We are having the Wallet, Transaction, and LedgerEntry in same
 #module because, they belong to the same domain.
@@ -70,6 +80,8 @@ class Transaction(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     idempotency_key = models.UUIDField(unique=True, editable=False, blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.id}"
 
 class Ledger(models.Model):
     TRANSACTION_TYPE  = (
@@ -84,7 +96,8 @@ class Ledger(models.Model):
     entry_type = models.CharField(max_length=6, choices=TRANSACTION_TYPE)
     created_at = models.DateTimeField(auto_now_add=True)
 
-
+    def __str__(self):
+        return f"{self.transaction}  {self.entry_type} {self.amount}"
 
 
 
